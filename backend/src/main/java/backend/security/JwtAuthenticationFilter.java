@@ -32,9 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
-            //en este caso response esta de onda pero podria
-            //en dado escenario generar datagramas salientes
-            //en caso de algun error de logica filtro
+            // en este caso response esta de onda pero podria
+            // en dado escenario generar datagramas salientes
+            // en caso de algun error de logica filtro
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,13 +42,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         if (jwtService.esValido(token)) {
+            System.out.println("************** TOKEN VALIDO **********");
             String correo = jwtService.extraerCorreo(token);
             usuarioRepository.findByCorreo(correo).ifPresent(usuario -> {
+                // Si existe en la bd, se crea una autenticacion de spring
+                // Con esto se le dice a spring que el usuario sea tratado como autenticado
+                // Para los endpoints futuros
+
+                // Se crea un obj auth
                 var authentication = new UsernamePasswordAuthenticationToken(usuario, null, Collections.emptyList());
+                // Y se lo mete en un security context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             });
         }
-
         filterChain.doFilter(request, response);
     }
 }

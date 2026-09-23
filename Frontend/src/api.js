@@ -10,7 +10,7 @@ const API_BASE_URL = "http://localhost:8080";
 
 // ---------- REGISTRO ----------
 // datosUsuario = {
-//   nombreUsuarios, correo, password, foto, fechaInicio, experiencia
+//   nombreUsuario, correo, password, foto, fechaInicio, experiencia
 // }
 async function registrarUsuario(datosUsuario) {
   const respuesta = await fetch(`${API_BASE_URL}/usuarios/register`, {
@@ -55,7 +55,8 @@ async function loginUsuario(credenciales) {
 async function fetchConToken(ruta, opciones = {}) {
   const token = localStorage.getItem("token");
 
-  const respuesta = await fetch(`${API_BASE_URL}${ruta}`, {
+  const rutaNormalizada = ruta.startsWith("/") ? ruta : `/${ruta}`;
+  const respuesta = await fetch(`${API_BASE_URL}${rutaNormalizada}`, {
     ...opciones,
     headers: {
       ...(opciones.headers || {}),
@@ -71,4 +72,56 @@ async function fetchConToken(ruta, opciones = {}) {
   }
 
   return respuesta;
+}
+
+// ---------- SEMILLA DEL TABLERO ----------
+// Solo se llama cuando el usuario ya inició sesión y realiza una acción
+// relevante del juego (click o reinicio). En el cuerpo solo se envía la dificultad.
+async function postAutenticado(dificultad) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return null;
+  }
+
+  const respuesta = await fetch(`${API_BASE_URL}/api/partidas?dificultad=${encodeURIComponent(dificultad)}`, {
+    method: "POST",
+    headers: {
+    //   "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    //puedo decidir si mandarlo como parametro o como body json
+    // body: JSON.stringify({ dificultad }),
+  });
+
+  if (!respuesta.ok) {
+    const textoError = await respuesta.text();
+    throw new Error(textoError || "No se pudo obtener la semilla");
+  }
+
+  //Parseo el JSON string que me llega en un objeto JS comun y corriente
+  return respuesta.json().catch(() => ({}));
+}
+
+// ---------- ACTUALIZAR PARTIDA ----------
+// Envía al backend las estadísticas de una partida ganada.
+async function patchAutenticado(datosPartida) {
+  const respuesta = await fetchConToken("/api/partidas", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datosPartida),
+  });
+
+  if (!respuesta) {
+    return null;
+  }
+
+  const datos = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) {
+    throw new Error(datos.mensaje || "No se pudo actualizar la partida");
+  }
+
+  return datos;
 }

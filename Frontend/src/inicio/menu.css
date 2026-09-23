@@ -210,16 +210,21 @@ body {
 .page-content {
     display: flex;
     justify-content: center;
+    align-items: center;
     padding: 20px 16px 70px;
 }
 
 .new-game-panel {
-    width: 632px;
+    width: min(632px, 100%);
     padding: 25px 45px 0;
+    margin: 0 auto;
     background: #0e0e10;
 }
 
 .modal {
+    width: 100%;
+    max-width: 632px;
+    margin: 0 auto;
     padding: 31px 35px 27px;
     border: 1px solid var(--line);
     border-radius: 17px;
@@ -252,7 +257,7 @@ h1 {
 
 .difficulty-track {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     margin-bottom: 24px;
 }

@@ -49,6 +49,10 @@ public class JwtService {
     public String extraerCorreo(String token) {
         return parseClaims(token).getSubject();
     }
+
+    public Integer extraerIdUsuario(String token) {
+        return parseClaims(token).get("idUsuarios", Integer.class);
+    }
     //Método para verificar la integridad del token o su caducidad
     public boolean esValido(String token) {
         try {

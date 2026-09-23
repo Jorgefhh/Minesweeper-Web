@@ -15,59 +15,56 @@ function enviarBackend() {
     fetch("http://localhost:8080/api/partidas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: datosJson 
+        body: datosJson
     })
-    .then(res => res.json())  // Este es quien recibe el eventual HTTP response del servidor.
-    .then(data => console.log("Respuesta del backend:", data))  // Procesa el objeto
-    .catch(err => console.error("Error:", err)); // Captura el error si es que hubo
+        .then(res => res.json())  // Este es quien recibe el eventual HTTP response del servidor.
+        .then(data => console.log("Respuesta del backend:", data))  // Procesa el objeto
+        .catch(err => console.error("Error:", err)); // Captura el error si es que hubo
 }
 
-// Enviar solo los datos necesarios para la tabla Partidas
-function enviarPartidaAlBackend(modoId = null) {
+// Enviar solo los datos necesarios para la tabla Partidas al ganar
+async function enviarPartidaAlBackend(modoId = null) {
     if (typeof juego === 'undefined') {
         console.error("Error: El objeto 'juego' no está disponible");
-        return;
+        return null;
     }
 
-    // Construir el objeto partida
-    const partida = {
-        tiempo: (juego.minutos * 60 + juego.segundos).toFixed(2),
-        click_izq: juego.clicksIzquierdo,
-        click_der: juego.clicksDerecho,
-        exp_ganada: calcularExp(juego), // o un valor fijo
-        fecha_partida: new Date().toISOString(),
-        Gamemode_idModo: modoId, // Solo si el usuario elige el modo explícitamente (el backend puede asignar un valor por defecto)
-        Usuarios_idUsuarios: 1   // el id del usuario que jugó
+    // Calcular el tiempo exacto transcurrido en segundos con 3 cifras decimales
+    const tiempoExacto = juego.inicio > 0
+        ? ((performance.now() - juego.inicio) / 1000).toFixed(3)
+        : Number(juego.segundos).toFixed(3);
+
+    // Construir el payload con los datos requeridos por el backend
+    const payload = {
+        idPartida: juego.idPartida,
+        idModo: modoId,
+        tiempo: tiempoExacto,
+        clicksIzquierdo: juego.clicksIzquierdo,
+        clicksDerecho: juego.clicksDerecho,
+        listaTraza: traza
     };
 
-    fetch("http://localhost:8080/api/partidas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(partida)
-    })
-    .then(res => res.json())
-    .then(data => console.log("Respuesta del backend:", data))
-    .catch(err => console.error("Error:", err));
+    try {
+        const data = await patchAutenticado(payload);
+
+        if (!data) return null; // Si fue redirigido por 401 u otro motivo
+
+        console.log("Servidor validó la victoria:", data);
+        return data;
+    } catch (err) {
+        console.warn("Validación rechazada o error de conexión con el backend:", err.message);
+        return null;
+    }
 }
 
-// Esta función la usé para enviar datos cuando el jugador GANA el juego
-function enviarStats(modoId = 1) {
+// Función auxiliar para enviar estadísticas al ganar
+async function enviarStats(modoId = 1) {
     if (typeof juego === 'undefined') {
         console.error("Error: El objeto 'juego' no está disponible");
-        return;
+        return null;
     }
-    if (juego.haGanado()) {
-        enviarPartidaAlBackend(modoId);
+    if (juego.haTerminado()) {
+        return await enviarPartidaAlBackend(modoId);
     }
-}
-
-// Función para enviar datos manualmente (por ejemplo, con un botón)
-function enviarDatosManualmente() {
-    enviarBackend();
-}
-
-
-function calcularExp(juego) {
-    // lógica simple: cada click suma 10 puntos
-    return (juego.clicksIzquierdo + juego.clicksDerecho) * 10;
+    return null;
 }

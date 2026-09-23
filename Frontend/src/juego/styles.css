@@ -1,7 +1,15 @@
+:root {
+  --cols: 9;
+  --rows: 9;
+  --celda-size: 64px;
+}
+
 body {
   display: flex;
-  flex-direction: column; /* apila verticalmente */
-  align-items: center;     /* centra horizontalmente */
+  flex-direction: column;
+  /* apila verticalmente */
+  align-items: center;
+  /* centra horizontalmente */
   background: #020202;
   margin: 0;
   min-height: 100vh;
@@ -9,165 +17,225 @@ body {
 
 .barra-superior {
   display: flex;
-  justify-content: center; /* centra horizontalmente */
-  align-items: center;     /* alinea verticalmente */
-  width: 100%;
-  margin: 5px 0;
+  justify-content: center;
+  align-items: center;
+  width: calc((var(--cols, 9) * var(--celda-size, 64px)) + 20px);
+  margin: 0px;
+  background: #1f1f1e;
+  border: 2px solid #6a6767;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+
+  padding: 10px 16px;
+  box-shadow: inset 0 0 0 5px #2f2e2e;
+  /* borde interno rojo */
+  box-sizing: border-box;
 }
 
 .barra-items {
   display: flex;
-  gap: 40px;              /* equidistancia entre boton, tiempo y bombas */
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  width: auto;
+  width: 100%;
 }
 
-.item-control {
+.barra-grupo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grupo-izquierdo {
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.grupo-centro {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.bomba-box {
-  border: 1px solid #ffffff;
-  font-size: 16px;
+.grupo-derecho {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.bomba-box,
+/* Este es el recuadro del display digital, el marco */
+.tiempo-box {
+  border: 3px solid #2B2929;
   color: white;
-  transform: scale(1.2);
-  padding: 10px 26px;
-  border-radius: 4px;
-  border-color: aliceblue;
-  background-color: #000000;
-
+  transform: scale(0.85);
+  padding: 9px 10px;
+  border-radius: 3px;
+  border-color: rgb(48, 46, 46);
+  background: linear-gradient(145deg, #0e0e0e, #050505);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.02), 0 0 18px rgba(255, 75, 75, 0.08);
   display: flex;
   align-items: center;
-  gap: 6px;
-
-  overflow: hidden; 
+  gap: 8px;
+  min-width: 95px;
+  justify-content: center;
+  overflow: hidden;
 }
+
+.mini-display {
+  min-width: 94px;
+}
+
 .bomba-box img {
-  width: 30px;   /* más grande que el contenedor */
+  width: 30px;
   height: 24px;
   object-fit: cover;
 }
 
 .bomba-icon {
-  width: 20px;
-  height: 20px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
+  filter: grayscale(1) brightness(0.95);
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.display {
+  position: relative;
+  display: inline-block;
+  font-family: 'DSEG7 Classic', 'Courier New', monospace;
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 2px;
+  min-width: 44px;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: none
+}
+
+.display .ghost {
+  color: rgba(255, 80, 80, 0.16);
+  user-select: none;
+}
+
+.display .live {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ff6d6d;
+  text-shadow:
+    0 0 4px rgba(255, 65, 65, 0.45),
+    0 0 8px rgba(255, 40, 40, 0.7),
+    0 0 20px rgba(255, 20, 20, 0.8),
+    0 0 35px rgba(255, 10, 10, 0.28);
 }
 
 #reiniciar {
   position: relative;
-  z-index: 0;
-  color: aliceblue;
-  background-color: #262626;
-  font-size: 20px;
-  padding: 16px 32px;
-  margin: 10px;
-  border-radius: 4px;
-  appearance: none;
+  width: 80px;
+  height: 80px;
+  background: url("../../assets/img/SMILE.png") center/cover no-repeat;
+  transform: scale(0.6);
   border: none;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
   outline: none;
+  /*  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.15);*/
+  transition: transform 0.12s ease, filter 0.15s ease;
+  font-size: 0;
+  /*Esto para quitar cualquier leyenda del boton que pueda traer dentro*/
+  color: transparent;
 }
 
-#reiniciar::after{
+#reiniciar:hover {
+  transform: scale(0.62);
+  filter: brightness(1.38);
+}
+
+#reiniciar:active,
+#reiniciar.activado {
+  transform: scale(0.64);
+}
+
+/* #reiniciar.activado::after {
   content: "";
   position: absolute;
-  top: 0.1px;
-  left: 0.1px;
-  right: 0.1px;
-  bottom: 0.1px;
-  background-color: transparent;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  transition: background-color 0.5s ease;
-  transition: border-color 0s ease;
-  pointer-events: none;
-  z-index: -1;
-}
-#reiniciar:hover::after{
-    background-color: rgba(95, 95, 95, 0.4); /* gris claro con transparencia */    
-}
-
-#reiniciar.activado::after{
-    border-color: white;
-}
-
-#tiempo {
-    border: 1px solid #ffffff;
-    font-size: 16px;
-    color: white;
-    transform: scale(1.5);
-    padding: 10px 26px;
-    border-radius: 4px;
-    border-color: aliceblue;
-}
+  inset: -5px;
+  border: 2px solid rgba(255,255,255,0.9);
+  border-radius: 6px;
+} */
 
 .contenedor-principal {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 16px;
-    margin-left: auto;
-    margin-right: auto;
+  /*Esto obliga a todos los hijos a tomar como referencia al padre y no al browser*/
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: fit-content;
+  margin-top: 4px;
 }
 
 .panel-estadisticas {
-    position: absolute;
-    right: 0;
-    top: 0;
-    visibility: hidden;
-    width: 280px;
-    background-color: rgba(50, 50, 50, 0.85);
-    border: 1px solid #888;
-    border-radius: 8px;
-    color: #ffffff;
-    padding: 16px;
+  position: absolute;
+  /*  Con esto el elemento se puede superponer sobre otros */
+  left: calc(100% + 24px);
+  /* Se posiciona 24px a la derecha del tablero, sin tocarlo */
+  top: 0;
+  visibility: hidden;
+  width: 260px;
+  background-color: rgba(35, 35, 35, 0.95);
+  border: 1px solid #555;
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  padding: 16px;
+  font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
 }
 
 .panel-estadisticas.visible {
-    visibility: visible;
-}
-
-
-.panel-estadisticas.visible {
-    visibility: visible;
+  visibility: visible;
 }
 
 .panel-estadisticas h2 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 18px;
-    color: #f4f4f4;
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  font-size: 18px;
+  color: #f4f4f4;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .panel-estadisticas ul {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.6;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .panel-estadisticas li {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 .contadores span {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-#clicks-izq, #clicks-der {
-    font-weight: bold;
-    color: #00ff00;
-    min-width: 20px;
-    text-align: center;
+#clicks-izq,
+#clicks-der {
+  font-weight: bold;
+  color: #00ff00;
+  min-width: 20px;
+  text-align: center;
 }
 
 .titulo {
@@ -181,29 +249,41 @@ body {
 }
 
 .tablero {
+
+
   display: grid;
-  grid-template-columns: repeat(8, 65px); /* 8 columnas */
-  grid-template-rows: repeat(8, 65px);    /* 8 filas */
-  border: 2px solid rgb(206, 206, 206);     /* Borde blanco */
-  padding: 8px;                /* Espacio interno entre borde y celdas */
-  border-radius: 8px;          /* Bordes redondeados opcionales */
-  background-color: #262626;   /* Fondo detrás de las celdas */
+  grid-template-columns: repeat(var(--cols), var(--celda-size));
+  grid-template-rows: repeat(var(--rows), var(--celda-size));
+  border: 2px solid rgb(206, 206, 206);
+  padding: 8px;
+  border-top-left-radius: 0px;
+  /* esquina superior izquierda cuadrada */
+  border-top-right-radius: 0px;
+  /* esquina superior derecha cuadrada*/
+  border-bottom-left-radius: 8px;
+  /* esquina inferior izquierda redondeada */
+  border-bottom-right-radius: 8px;
+  /* esquina inferior derecha redondeada */
+  background-color: #262626;
+  justify-content: center;
+  align-content: center;
 }
 
 .celda {
-  width: 64.4px;
-  height: 64.4px;
-  background-size: cover;     /* la imagen ocupa todo el espacio */
+  width: var(--celda-size);
+  height: var(--celda-size);
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 1px;
-  border: 0.1px solid #262626; /* simula el gap visual */
-
+  border: 0.1px solid #262626;
   transform: scale(0.988);
+  box-sizing: border-box;
 }
 
 .celda {
-  position: relative; /* necesario para posicionar el pseudo-elemento */
+  position: relative;
+  /* necesario para posicionar el pseudo-elemento */
 }
 
 
@@ -217,23 +297,26 @@ body {
   right: 0.1px;
   bottom: 0.1px;
   border-radius: 4px;
-  pointer-events: none; /* Muy buena práctica para que no interfiera con el mouse */
-  
+  pointer-events: none;
+  /* Muy buena práctica para que no interfiera con el mouse */
+
   /* Estado inicial: borde transparente */
-  border: 1.4px solid transparent; 
+  border: 1.4px solid transparent;
   background-color: transparent;
-  
+
   /* Aquí definimos la transición para que se aplique en ambos sentidos */
-  transition: border-color 0.5s ease; /* Reduje el tiempo para un efecto más ágil */
+  transition: border-color 0.5s ease;
+  /* Reduje el tiempo para un efecto más ágil */
 }
 
 /*EFECTO: Se enciende tenuemente un borde gris para cada celda*/
 .celda:hover::after {
-  border-color: rgb(124, 124, 124); /* Al hacer hover, el color cambia y la transición se activa */
+  border-color: rgb(124, 124, 124);
+  /* Al hacer hover, el color cambia y la transición se activa */
 }
 
-.celda-oculta::after{
- content: "";
+.celda-oculta::after {
+  content: "";
   position: absolute;
   top: 0.3px;
   left: 0.3;
@@ -245,9 +328,13 @@ body {
   transition: border-color 0.5s ease;
   pointer-events: none;
 }
-.celda-oculta:hover::after{
-    background-color: rgba(185, 185, 185, 0.4); /* gris claro con transparencia */
-    border-color: white;
+
+.celda-oculta:hover::after {
+  background-color: rgba(185, 185, 185, 0.4);
+  /* gris claro con transparencia */
+  border-color: white;
+  border-width: 2px;
+
 }
 
 
@@ -262,12 +349,14 @@ body {
 
 .celda-1 {
   background-image: url("../../assets/img/UNO.png");
-  filter: brightness(1.2); /* 120% de brillo */
+  filter: brightness(1.2);
+  /* 120% de brillo */
 }
 
 .celda-2 {
   background-image: url("../../assets/img/DOS.png");
-  filter: brightness(1.2); /* 120% de brillo */
+  filter: brightness(1.2);
+  /* 120% de brillo */
 }
 
 .celda-3 {
@@ -282,37 +371,42 @@ body {
   background-image: url("../../assets/img/CINCO.png");
 }
 
+.celda-6 {
+  background-image: url("../../assets/img/SEIS.png");
+}
+
 .celda-oculta {
   background-image: url("../../assets/img/CeldaGris.png");
   position: relative;
 }
+
 .celda-vacia {
-    background-color: rgb(19, 19, 19);
+  background-color: rgb(19, 19, 19);
 }
 
 .celda-bandera-error {
-    background-image: url("../../assets/img/BANDERA.png");
-    top: 0.3px;
-    left: 0.3;
-    right: 0.3;
-    bottom: 0.3;
-    transform: scale(0.98);
-    background-color: rgb(237, 127, 127);
-    border-radius: 4px;
-    
-    background-blend-mode: multiply;
-    background-size: cover;
-    background-position: center;
+  background-image: url("../../assets/img/BANDERA.png");
+  top: 0.3px;
+  left: 0.3;
+  right: 0.3;
+  bottom: 0.3;
+  transform: scale(0.98);
+  background-color: rgb(237, 127, 127);
+  border-radius: 4px;
+
+  background-blend-mode: multiply;
+  background-size: cover;
+  background-position: center;
 }
 
 
-.celda-bandera{
-    background-image: url("../../assets/img/BANDERA.png");
+.celda-bandera {
+  background-image: url("../../assets/img/BANDERA.png");
 
 }
 
-.celda-bandera::after{
- content: "";
+.celda-bandera::after {
+  content: "";
   position: absolute;
   top: 0.3px;
   left: 0.3;
@@ -324,9 +418,11 @@ body {
   transition: border-color 0.5s ease;
   pointer-events: none;
 }
-.celda-bandera:hover::after{
-    background-color: rgba(185, 185, 185, 0.4); /* gris claro con transparencia */
-    border-color: white;
+
+.celda-bandera:hover::after {
+  background-color: rgba(185, 185, 185, 0.4);
+  /* gris claro con transparencia */
+  border-color: white;
 }
 
 @keyframes pulsoRojo {
@@ -335,18 +431,22 @@ body {
     box-shadow: 0 0 0px rgba(255, 0, 0, 0.6);
     opacity: 1;
   }
+
   25% {
     transform: scale(1.05) rotate(1deg);
     box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
   }
+
   50% {
     transform: scale(1.1) rotate(-1deg);
     box-shadow: 0 0 25px rgba(255, 0, 0, 1);
   }
+
   75% {
     transform: scale(1.05) rotate(1deg);
     box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
   }
+
   100% {
     transform: scale(1);
     box-shadow: 0 0 0px rgba(255, 0, 0, 0.6);

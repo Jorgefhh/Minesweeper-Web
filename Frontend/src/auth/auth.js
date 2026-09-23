@@ -83,7 +83,7 @@ if (formRegistro) {
 
     try {
       await registrarUsuario({
-        nombreUsuarios: nombre,
+        nombreUsuario: nombre,
         correo,
         password: contrasena,
         foto: "default-user.png",

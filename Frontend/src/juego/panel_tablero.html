@@ -1,34 +1,52 @@
-<html lang="es"><head>
+<html lang="es">
+
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Buscaminas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/dseg7-classic@5.3.0/index.css">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <h1 class="titulo">Buscaminas - Neon</h1>
+  <!-- <h1 class="titulo">Buscaminas - Neon</h1> -->
   <div class="barra-superior">
     <div class="barra-items">
-      <div class="item-control bomba-box">
-        <img src="../../assets/img/banderaGemi.png" alt="Bomba" class="bomba-icon">
-        <span id="bombas-restantes">10</span>
+      <div class="barra-grupo grupo-izquierdo">
+        <img src="../../assets/img/GRAYFLAG.png" alt="Bandera" class="bomba-icon">
+        <div class="item-control bomba-box">
+          <div class="display mini-display">
+            <span class="ghost">999</span>
+            <span id="bombas-restantes" class="live">000</span>
+          </div>
+        </div>
       </div>
-      <div class="item-control">
-        <button id="reiniciar">Reiniciar</button>
+
+      <div class="barra-grupo grupo-centro">
+        <button id="reiniciar" type="button" aria-label="Reiniciar partida"></button>
       </div>
-      <div class="item-control">
-        <div id="tiempo">00:00</div>
+
+      <div class="barra-grupo grupo-derecho">
+        <div class="item-control tiempo-box">
+          <div class="display mini-display">
+            <span class="ghost">999</span>
+            <span id="tiempo" class="live">000</span>
+          </div>
+        </div>
+        <img src="../../assets/img/GRAYCLOCK.png" alt="Reloj" class="bomba-icon">
       </div>
     </div>
   </div>
 
   <div class="contenedor-principal">
-    <div class="tablero"><div class="celda celda-oculta" data-index="0"></div><div class="celda celda-oculta" data-index="1"></div><div class="celda celda-oculta" data-index="2"></div><div class="celda celda-oculta" data-index="3"></div><div class="celda celda-oculta" data-index="4"></div><div class="celda celda-oculta" data-index="5"></div><div class="celda celda-oculta" data-index="6"></div><div class="celda celda-oculta" data-index="7"></div><div class="celda celda-oculta" data-index="8"></div><div class="celda celda-oculta" data-index="9"></div><div class="celda celda-oculta" data-index="10"></div><div class="celda celda-oculta" data-index="11"></div><div class="celda celda-oculta" data-index="12"></div><div class="celda celda-oculta" data-index="13"></div><div class="celda celda-oculta" data-index="14"></div><div class="celda celda-oculta" data-index="15"></div><div class="celda celda-oculta" data-index="16"></div><div class="celda celda-oculta" data-index="17"></div><div class="celda celda-oculta" data-index="18"></div><div class="celda celda-oculta" data-index="19"></div><div class="celda celda-oculta" data-index="20"></div><div class="celda celda-oculta" data-index="21"></div><div class="celda celda-oculta" data-index="22"></div><div class="celda celda-oculta" data-index="23"></div><div class="celda celda-oculta" data-index="24"></div><div class="celda celda-oculta" data-index="25"></div><div class="celda celda-oculta" data-index="26"></div><div class="celda celda-oculta" data-index="27"></div><div class="celda celda-oculta" data-index="28"></div><div class="celda celda-oculta" data-index="29"></div><div class="celda celda-oculta" data-index="30"></div><div class="celda celda-oculta" data-index="31"></div><div class="celda celda-oculta" data-index="32"></div><div class="celda celda-oculta" data-index="33"></div><div class="celda celda-oculta" data-index="34"></div><div class="celda celda-oculta" data-index="35"></div><div class="celda celda-oculta" data-index="36"></div><div class="celda celda-oculta" data-index="37"></div><div class="celda celda-oculta" data-index="38"></div><div class="celda celda-oculta" data-index="39"></div><div class="celda celda-oculta" data-index="40"></div><div class="celda celda-oculta" data-index="41"></div><div class="celda celda-oculta" data-index="42"></div><div class="celda celda-oculta" data-index="43"></div><div class="celda celda-oculta" data-index="44"></div><div class="celda celda-oculta" data-index="45"></div><div class="celda celda-oculta" data-index="46"></div><div class="celda celda-oculta" data-index="47"></div><div class="celda celda-oculta" data-index="48"></div><div class="celda celda-oculta" data-index="49"></div><div class="celda celda-oculta" data-index="50"></div><div class="celda celda-oculta" data-index="51"></div><div class="celda celda-oculta" data-index="52"></div><div class="celda celda-oculta" data-index="53"></div><div class="celda celda-oculta" data-index="54"></div><div class="celda celda-oculta" data-index="55"></div><div class="celda celda-oculta" data-index="56"></div><div class="celda celda-oculta" data-index="57"></div><div class="celda celda-oculta" data-index="58"></div><div class="celda celda-oculta" data-index="59"></div><div class="celda celda-oculta" data-index="60"></div><div class="celda celda-oculta" data-index="61"></div><div class="celda celda-oculta" data-index="62"></div><div class="celda celda-oculta" data-index="63"></div></div> <!-- Aquí se insertan las celdas dinámicamente -->
+    <!-- Esto cambiar algun dia se ve horrible -->
+    <div class="tablero"></div>
     <aside class="panel-estadisticas">
-      <h2>Estadísticas</h2>
+      <h2>Resultados</h2>
       <ul>
         <li>Clicks Izq: <span id="estad-clicks-izq">0</span></li>
         <li>Clicks Der: <span id="estad-clicks-der">0</span></li>
-        <li>Tiempo transcurrido: <span id="estad-tiempo">00:00</span></li>
+        <li>Tiempo transcurrido: <span id="estad-tiempo">0.000 s</span></li>
         <li>Fecha última partida: <span id="estad-fecha">-</span></li>
         <li>Dificultad: <span id="estad-modo">1</span></li>
         <li>XP ganada: <span id="estad-exp">0</span></li>
@@ -36,9 +54,15 @@
     </aside>
   </div>
 
+  <script src="plantilla.js"></script>
+  <script src="../api.js"></script>
   <script src="logica.js"></script>
   <script src="juego.js"></script>
   <script src="stats.js"></script>
+  <script src="click.js"></script>
 
 
-</body></html>
+
+</body>
+
+</html>

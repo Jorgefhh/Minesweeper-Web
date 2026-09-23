@@ -76,6 +76,13 @@
 			<scope>test</scope>
 		</dependency>
 
+        <!-- Dependencias de Jackson para trabajar con JSONs -->
+        <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+
         <!-- Dependencias de JWT -->
 
         <dependency>

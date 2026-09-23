@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Contador Neón DSEG7</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/dseg7-classic@5.3.0/index.css">
+<style>
+  :root{
+    --off: #3a0e0e70;
+    --on: #f67070;
+    --glow: #ff3b3b;
+    --panel: #050505;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    height:100%;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: radial-gradient(circle at 50% 30%, #1a1a1a, #050505 70%);
+    font-family: 'Courier New', monospace;
+  }
+
+  .wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:28px;
+  }
+
+  .case{
+    background: linear-gradient(145deg, #2a2a2a, #0e0e0e);
+    border-radius: 22px;
+    padding: 12px;
+    box-shadow:
+      0 0 0 1px rgba(102, 102, 102, 0.04) inset,
+      0 20px 40px rgba(0,0,0,0.6),
+      0 0 60px rgba(255,20,20,0.08);
+  }
+
+  .panel{
+    position: relative;
+    background: var(--panel);
+    border-radius: 10px;
+    padding: 30px 38px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+    overflow: hidden;
+  }
+  .panel::before{
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(ellipse at center, rgba(255,20,20,0.12), transparent 60%);
+    pointer-events: none;
+  }
+
+  .display{
+    position: relative;
+    font-family: 'DSEG7 Classic', monospace;
+    font-weight: 400;
+    font-size: 100px;
+    line-height: 1;
+    letter-spacing: 6px;
+  }
+
+  /* fondo: dígitos "apagados" (todos los segmentos tenues, tipo "888") */
+  .ghost{
+    color: var(--off);
+    user-select: none;
+  }
+
+  /* dígitos reales encendidos, superpuestos exactamente sobre el fondo */
+  .live{
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--on);
+    text-shadow:
+      0 0 4px #3c01014c,
+      0 0 6px var(--glow),
+      0 0 10px var(--glow),
+      0 0 48px rgba(124, 15, 15, 0.55),
+      0 0 80px rgba(255,20,20,0.25);
+  }
+
+  .controls{
+    display:flex;
+    gap: 14px;
+  }
+
+  button{
+    font-family: inherit;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #ffb3b3;
+    background: linear-gradient(145deg, #1c1c1c, #0a0a0a);
+    border: 1px solid rgba(255,60,60,0.3);
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-transform: lowercase;
+    transition: all 0.15s ease;
+  }
+  button:hover{
+    color:#fff;
+    border-color: rgba(255,60,60,0.7);
+    box-shadow: 0 0 14px rgba(255,30,30,0.35);
+  }
+  button:active{ transform: scale(0.96); }
+
+  .speed{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#7a4040;
+    font-size:13px;
+  }
+  .speed input{
+    accent-color: #ff2b2b;
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <div class="case">
+      <div class="panel">
+        <div class="display">
+          <span class="ghost">888</span>
+          <span class="live" id="liveDigits">000</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn">iniciar</button>
+      <button id="pauseBtn">pausar</button>
+      <button id="resetBtn">reiniciar</button>
+    </div>
+
+    <div class="speed">
+      <span>velocidad</span>
+      <input type="range" id="speedRange" min="10" max="1000" value="200">
+      <span id="speedLabel">200 ms</span>
+    </div>
+  </div>
+
+<script>
+  const liveEl = document.getElementById('liveDigits');
+
+  function render(n){
+    liveEl.textContent = String(n).padStart(3,'0');
+  }
+
+  let count = 0;
+  let timer = null;
+  let intervalMs = 200;
+
+  render(count);
+
+  function tick(){
+    count = (count + 1) % 1000;
+    render(count);
+  }
+
+  function start(){
+    if(timer) return;
+    timer = setInterval(tick, intervalMs);
+  }
+  function reset(){
+    pause();
+    count = 0;
+    render(count);
+  }
+
+//   document.getElementById('startBtn').addEventListener('click', start);
+//   document.getElementById('pauseBtn').addEventListener('click', pause);
+//   document.getElementById('resetBtn').addEventListener('click', reset);
+
+  const speedRange = document.getElementById('speedRange');
+  const speedLabel = document.getElementById('speedLabel');
+  speedRange.addEventListener('input', ()=>{
+    intervalMs = parseInt(speedRange.value,10);
+    speedLabel.textContent = intervalMs + ' ms';
+    if(timer){
+      pause();
+      start();
+    }
+  });
+</script>
+</body>
+</html>
