@@ -1,83 +1,180 @@
-//Busca todos los elmentos que tengan la clase diff-card
+// ============================================================================
+//  menu.js — Maneja la selección de dificultad y la transición al juego
+//  inline dentro de menu.html, además de toda la funcionalidad del panel
+//  de opciones (dificultad, zoom, pantalla completa, nuevo juego).
+// ============================================================================
 
-const difficultyCards = Array.from(document.querySelectorAll('.diff-card'));  //Devuelve una colección 
+// ─── Referencias DOM ───
+const difficultyCards = Array.from(document.querySelectorAll('.diff-card'));
 const startButton = document.getElementById('start-button');
-//Guarda la referencia a un elemento del DOM de html 
 const guestLogin = document.getElementById('guest-login');
-//Guarda una referencia al elemento que contiene:
-//Avatar,  Username, XP y Barra de XP
 const accountPreview = document.getElementById('account-preview');
-const username = document.getElementById('username');
+const usernameEl = document.getElementById('username');
 const xpValue = document.getElementById('xp-value');
 const xpProgress = document.getElementById('xp-progress');
-//Verifica la existencia de un token para saber si hay sesión
-const hasSession = Boolean(localStorage.getItem('token'));
 
-//Utilizamos la propiedad hiden para ocultar un elemento HTML
-/*
-Básicamente le ponemos así, con eso el navegador no lo mostrará:
-<a hidden>Iniciá sesión</a>
-*/
+const menuPanel = document.getElementById('menu-panel');
+const gameArea = document.getElementById('game-area');
+
+// ─── Sesión ───
+const hasSession = Boolean(localStorage.getItem('token'));
 guestLogin.hidden = hasSession;
-accountPreview.hidden = !hasSession;   //Si hay sesión entonces la propiedad de ocultar es falsa
+accountPreview.hidden = !hasSession;
 
 if (hasSession) {
-    //ESTA ES UNA OPERACIÓN PARA DESEARIZAR
-    //IMPORTANTE: Convierte el string JSON de vuelta en un objeto JavaScript.
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     const nombre = usuario.nombreUsuarios;
-    //Usamos la operación de javascript nullish coalescing "??":
     const experiencia = Number(usuario.experiencia ?? 0);
-    //La linea de arriba básicamente dice:
-    //Si el usuario tiene un valor de xp, usalo, si es null entonces usa 0
-
-    //Si el usuario tiene nombre pues poner ese nombre en html
-    if (nombre) username.textContent = nombre;
+    if (nombre) usernameEl.textContent = nombre;
     xpValue.textContent = experiencia;
-    //Calcular la experiencia
     xpProgress.style.width = `${Math.min(experiencia, 100)}%`;
 }
-let dificultad = null;  //Hardcodeo la dificultad deseada por ahora
-//Ahora lidio con la dificultad del juego que esta en un id:
-difficultyCards.forEach(
-    card => {
-        card.addEventListener('click',
-             () => {
-                //extraigo atributo y parseo
-                dificultad = parseInt(card.dataset.index,10);
-                //console.log("Dificultad seleccionada: " + dificultad);
-                selectDifficulty(dificultad);
-            }
-        )
-    }
-);
 
-startButton.addEventListener('click', () => {
-    const dificultadActual = localStorage.getItem("dificultad") || "facil";
-  if (dificultadActual && ["facil", "intermedio", "dificil"].includes(dificultadActual) ){
-    
-    window.location.href = '../juego/panel_tablero.html';    
-  } 
-  else {
-    alert('Seleccioná una dificultad antes de empezar');
-  }
+// ─── Selección de dificultad en el menú de inicio ───
+let dificultad = null;
+difficultyCards.forEach(card => {
+    card.addEventListener('click', () => {
+        dificultad = parseInt(card.dataset.index, 10);
+        selectDifficulty(dificultad);
+    });
 });
-//Marcar el html clickeado como selected
+
 function selectDifficulty(index) {
-    //Recorre todos los botones.
     const nombreDificultad = ["facil", "intermedio", "dificil"][index];
-    //Guardo la dificultad finalmente como un string en localstorage
     localStorage.setItem("dificultad", nombreDificultad);
-    difficultyCards.forEach((card, cardIndex) => { //Card es cada boton, cardIndex su posicion
-    const isSelected = cardIndex === index; //Es el boton que realmente elegí
-    //En base al indice que obtuve vuelvo y lo marco como selected.
-    card.classList.toggle('selected', isSelected); //Dependiendo de si isSelected es true o false
-    //isSelected == true -> Agrega -> selected
-    //isSelected == false -> elimina -> selected
-    //Con esto modifico el texto de ese atributo:
-    //Si cambia el texto entonces un parametro de css puede dispararse si hay match
-    card.setAttribute('aria-pressed', String(isSelected)); //Es una funcionalidad peculiar
-    //Básicamente se usa para manipular el lector de texto para personas ciegas
-  });
+    difficultyCards.forEach((card, cardIndex) => {
+        const isSelected = cardIndex === index;
+        card.classList.toggle('selected', isSelected);
+        card.setAttribute('aria-pressed', String(isSelected));
+    });
 }
 
+// ─── Botón Empezar → Mostrar tablero inline ───
+startButton.addEventListener('click', () => {
+    const dificultadActual = localStorage.getItem("dificultad") || "facil";
+    if (dificultadActual && ["facil", "intermedio", "dificil"].includes(dificultadActual)) {
+        mostrarJuego(dificultadActual);
+    } else {
+        alert('Seleccioná una dificultad antes de empezar');
+    }
+});
+
+function mostrarJuego(dificultadActual) {
+    // Sincronizar el botón segmentado del panel con la dificultad elegida
+    sincronizarSegDificultad(dificultadActual);
+
+    // Fade-out el menú, fade-in el tablero
+    menuPanel.classList.add('fade-out');
+    menuPanel.addEventListener('animationend', () => {
+        menuPanel.hidden = true;
+        gameArea.hidden = false;
+        gameArea.classList.add('fade-in');
+
+        // Iniciar / reiniciar el juego con la dificultad elegida
+        iniciarJuegoInline();
+    }, { once: true });
+}
+
+function iniciarJuegoInline() {
+    juego.reiniciarEstado();
+    pintar();
+}
+
+// ═══════════════════════════════════════════════════
+//  PANEL DE OPCIONES — Funcionalidad
+// ═══════════════════════════════════════════════════
+
+// ─── Dificultad segmentada ───
+function sincronizarSegDificultad(dificultadStr) {
+    document.querySelectorAll('#seg-dificultad button').forEach(b => {
+        b.classList.toggle('on', b.dataset.d === dificultadStr);
+    });
+}
+
+document.querySelectorAll('#seg-dificultad button').forEach(b => {
+    b.addEventListener('click', () => {
+        const nuevaDificultad = b.dataset.d;
+        // Actualizar visual del panel
+        document.querySelectorAll('#seg-dificultad button').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+
+        // Guardar y recargar el juego con la nueva dificultad
+        localStorage.setItem("dificultad", nuevaDificultad);
+        juego.reiniciarEstado();
+        reiniciarJuego();
+    });
+});
+
+// ─── Zoom ───
+let zoom = 100;
+const ZOOM_MIN = 70;
+const ZOOM_MAX = 130;
+const ZOOM_STEP = 10;
+const zoomValEl = document.getElementById('zoomVal');
+const zoomBoardZone = document.getElementById('board-zone');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+
+function setZoom(v) {
+    zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, v));
+    zoomValEl.textContent = zoom + '%';
+    zoomBoardZone.style.zoom = zoom / 100;
+    // Desactivar visualmente los botones en los límites
+    zoomInBtn.style.opacity = zoom >= ZOOM_MAX ? '0.35' : '1';
+    zoomInBtn.style.pointerEvents = zoom >= ZOOM_MAX ? 'none' : 'auto';
+    zoomOutBtn.style.opacity = zoom <= ZOOM_MIN ? '0.35' : '1';
+    zoomOutBtn.style.pointerEvents = zoom <= ZOOM_MIN ? 'none' : 'auto';
+}
+
+zoomInBtn.addEventListener('click', () => setZoom(zoom + ZOOM_STEP));
+zoomOutBtn.addEventListener('click', () => setZoom(zoom - ZOOM_STEP));
+
+// ─── Pantalla completa ───
+document.getElementById('btnFull').addEventListener('click', () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+    }
+});
+
+// ─── Botón Nuevo juego (equivalente al botón de carita) ───
+document.getElementById('btnNuevo').addEventListener('click', async () => {
+    const btn = document.getElementById('reiniciar');
+    if (btn) {
+        btn.classList.add('activado');
+        setTimeout(() => btn.classList.remove('activado'), 200);
+    }
+    await reiniciarJuego();
+});
+
+// ─── Pistas (placeholder: decrementa el badge) ───
+document.getElementById('btnPista').addEventListener('click', () => {
+    const p = document.getElementById('pistas');
+    const n = +p.textContent;
+    if (n > 0) p.textContent = n - 1;
+});
+
+// ─── Cómo jugar (placeholder) ───
+document.getElementById('btnAyuda').addEventListener('click', () => {
+    alert(
+        '🎮 Cómo jugar Minesweeper Neon\n\n' +
+        '• Click izquierdo: Revela una celda.\n' +
+        '• Click derecho: Coloca o quita una bandera.\n' +
+        '• Los números indican cuántas minas hay alrededor.\n' +
+        '• Revela todas las celdas sin minas para ganar.\n' +
+        '• Si pisás una mina, ¡perdés!'
+    );
+});
+
+// --- Navegaci�n a Clasificaci�n ---
+const navClasificacion = document.getElementById('nav-clasificacion');
+if (navClasificacion) {
+    navClasificacion.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = document.getElementById('clasificacion-section');
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+}

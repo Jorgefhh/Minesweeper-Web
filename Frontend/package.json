@@ -1,0 +1,15 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "La idea es simple: **una carpeta por tema**. Todo lo de login/registro va junto, todo lo del juego va junto, y lo que usan los dos (api.js, styles.css) queda \"suelto\" en `src/` porque es compartido.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.4"
+  }
+}

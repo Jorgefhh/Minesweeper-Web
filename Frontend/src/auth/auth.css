@@ -68,7 +68,7 @@ label {
   color: var(--color-texto-tenue);
 }
 
-input {
+input, select {
   width: 100%;
   padding: 10px 12px;
   margin-bottom: 18px;
@@ -79,10 +79,58 @@ input {
   font-size: 14px;
 }
 
-input:focus {
+/* Cuando no se eligió nada todavía, el texto se ve tenue como un placeholder */
+select:invalid {
+  color: var(--color-texto-tenue);
+}
+
+/* Las opciones del dropdown siempre con el color normal */
+select option {
+  color: var(--color-texto);
+  background-color: #101010;
+}
+
+input:focus, select:focus {
   outline: none;
   border-color: var(--color-acento);
 }
+
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.input-password-wrapper input {
+  margin-bottom: 0;
+  padding-right: 40px;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--color-texto-tenue);
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-toggle-password svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-toggle-password:hover {
+  color: var(--color-texto);
+}
+
+
 
 button {
   width: 100%;

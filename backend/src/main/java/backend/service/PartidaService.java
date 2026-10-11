@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import backend.dto.PartidaCreada;
 import backend.dto.StatsRequest;
 import backend.dto.StatsResponse;
+import backend.model.Clasificacion;
+import backend.model.ClasificacionId;
 import backend.model.Estado;
 import backend.model.Juego;
 import backend.model.Partida;
 import backend.model.Usuario;
+import backend.repository.ClasificacionRepository;
 import backend.repository.PartidaRepository;
 import backend.repository.UsuarioRepository;
 
@@ -22,12 +25,14 @@ public class PartidaService {
     private final PartidaRepository partidaRepository;
     private final LogicaService logicaService;
     private final UsuarioRepository usuarioRepository;
+    private final ClasificacionRepository clasificacionRepository;
 
     public PartidaService(PartidaRepository partidaRepository, LogicaService logicaService,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository, ClasificacionRepository clasificacionRepository) {
         this.partidaRepository = partidaRepository;
         this.logicaService = logicaService;
         this.usuarioRepository = usuarioRepository;
+        this.clasificacionRepository = clasificacionRepository;
     }
 
     // Este metodo tiene como finalidad guardar en la base de datos, algunos
@@ -68,6 +73,7 @@ public class PartidaService {
             throw new RuntimeException("Partida no encontrada.");
         }
         Juego juego = logicaService.simularJuego(partida, stats);
+        boolean respuesta = false;
         // CASO PARTIDA GANADA:
         if (juego.getEstado() == Estado.GANADA) {
             Instant fin = Instant.now();
@@ -79,6 +85,10 @@ public class PartidaService {
             partida.setClickIzq(juego.getClicksIzquierdos());
             // Finalmente se persiste el objeto en la base de datos:
             partidaRepository.save(partida);
+
+             // Si partida es un record personal, solo para el caso de haberla ganada:
+            System.out.println("Ahora a guardar el record");
+            respuesta = guardarRecord(partida); 
         }
         // CASO PARTIDA PERDIDA: solo marcar estado y no guardar todo.
         else {
@@ -101,11 +111,54 @@ public class PartidaService {
             usuarioRepository.acumularExperiencia(usuario.getIdUsuarios(), exp);
         }
 
+        
+       
         // Retornar el objeto DTO de salida:
+
+        // Quizás después aquí debería hacer un procedimiento para actualizar la tabla
+        // global
         return new StatsResponse(
                 juego.getClicksIzquierdos(),
                 juego.getClicksDerechos(),
                 partida.getTiempo(),
-                exp);
+                exp, respuesta);
+    }
+
+    // Método para guardarRecord.
+    public boolean guardarRecord(Partida partida) {
+        // Primero creo la clave compuesta:
+        ClasificacionId id = new ClasificacionId(partida.getUsuarioId(), partida.getIdModo());
+        // Primero veo si en la base de datos existe una clasificacion de ese usuario
+        Optional<Clasificacion> c = clasificacionRepository.findById(id);
+        if (c.isEmpty()) {
+            // Entonces la lleno por primera vez:
+            System.out.println("Lleno por primera vez.");
+            Clasificacion clasificacion = new Clasificacion(
+                    id,
+                    partida.getTiempo(),
+                    partida.getFechaPartida());
+
+            clasificacionRepository.save(clasificacion);
+            // Tener cuidado con spring data
+            /*
+             * Si @Id es null → piensa que es una entidad nueva → hace INSERT
+             * Si @Id no es null → piensa que ya existe → hace UPDATE
+             */
+            // Algun mensaje o algo en especial.
+            return true;
+        } else {
+            // Obtengo el objeto dentro del optional:
+            Clasificacion clasificacion = c.get();
+            if (partida.getTiempo() < clasificacion.getMejorTiempo()) {
+                // Entonces hagase el reemplazo:
+                clasificacion.setId(id);
+                clasificacion.setFechaRecord(partida.getFechaPartida());
+                clasificacion.setMejorTiempo(partida.getTiempo());
+                // Lo mando a jdbc:
+                clasificacionRepository.save(clasificacion);
+                return true;
+            }
+            return false;
+        }
     }
 }

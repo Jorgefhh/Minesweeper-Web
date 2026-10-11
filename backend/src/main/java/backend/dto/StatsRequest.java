@@ -14,6 +14,7 @@ import lombok.Setter;
 public class StatsRequest {
     private Integer idPartida;
     private Integer idModo;
+    private double tiempo;
     private Integer clicksIzquierdo;
     private Integer clicksDerecho;
     private List<Traza> listaTraza;

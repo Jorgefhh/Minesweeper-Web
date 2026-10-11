@@ -66,18 +66,43 @@ if (formLogin) {
 const formRegistro = document.getElementById("form-registro");
 
 if (formRegistro) {
+  // --- Toggle de contraseña (alterna icono ojo abierto/cerrado) ---
+  function configurarToggle(botonId, inputId) {
+    const boton = document.getElementById(botonId);
+    const input = document.getElementById(inputId);
+    if (!boton || !input) return;
+
+    boton.addEventListener("click", () => {
+      const esPassword = input.getAttribute("type") === "password";
+      input.setAttribute("type", esPassword ? "text" : "password");
+      boton.querySelector(".icono-ojo").style.display = esPassword ? "none" : "block";
+      boton.querySelector(".icono-ojo-cerrado").style.display = esPassword ? "block" : "none";
+    });
+  }
+
+  configurarToggle("toggle-contrasena", "contrasena");
+  configurarToggle("toggle-repetir-contrasena", "repetir-contrasena");
+
   formRegistro.addEventListener("submit", async (evento) => {
     evento.preventDefault();
 
     const nombre = document.getElementById("nombre").value;
     const correo = document.getElementById("correo").value;
+    const pais = document.getElementById("pais").value;
     const contrasena = document.getElementById("contrasena").value;
+    const repetirContrasena = document.getElementById("repetir-contrasena").value;
     const mensajeError = document.getElementById("mensaje-error");
     const mensajeExito = document.getElementById("mensaje-exito");
     const boton = formRegistro.querySelector("button");
 
     mensajeError.textContent = "";
     mensajeExito.textContent = "";
+
+    if (contrasena !== repetirContrasena) {
+      mensajeError.textContent = "Las contraseñas no coinciden.";
+      return;
+    }
+
     boton.disabled = true;
     boton.textContent = "Creando cuenta...";
 
@@ -85,6 +110,7 @@ if (formRegistro) {
       await registrarUsuario({
         nombreUsuario: nombre,
         correo,
+        pais,
         password: contrasena,
         foto: "default-user.png",
         fechaInicio: "2003-02-18",

@@ -63,7 +63,9 @@ const juego = {
     // Restaurar carita sonriente original
     const btn = document.getElementById("reiniciar");
     if (btn) {
-      btn.style.backgroundImage = "url('../../assets/img/SMILE.png')";
+      const assetBase = window.location.pathname.includes('/inicio/')
+        ? '../../assets/img/' : '../../assets/img/';
+      btn.style.backgroundImage = `url('${assetBase}SMILE.png')`;
     }
   },
   mostrarEstadisticasUI(datosBackend = null) {
@@ -79,7 +81,7 @@ const juego = {
 
     // El tiempo siempre debe mostrarse en segundos con 3 cifras decimales
     let tiempoSegundos;
-    if (datosBackend?.tiempo !== undefined && datosBackend?.tiempo !== null) {
+    if (this.haGanado() && datosBackend?.tiempo !== undefined && datosBackend?.tiempo !== null) {
       tiempoSegundos = typeof datosBackend.tiempo === "number"
         ? datosBackend.tiempo.toFixed(3)
         : String(datosBackend.tiempo);

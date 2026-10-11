@@ -42,7 +42,7 @@ public class Juego {
             if (traza.getTipo().equals("izquierdo")) {
                 this.clicksIzquierdos++;
                 aplicarJugada(fila, columna);
-            } else {
+            } else if(traza.getTipo().equals("derecho")){
                 this.clicksDerechos++; // dudoso porque confío en el frontd.
                 this.tablero.aplicarBandera(fila, columna);
             }

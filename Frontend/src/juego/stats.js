@@ -59,12 +59,23 @@ async function enviarPartidaAlBackend(modoId = null) {
 
 // Función auxiliar para enviar estadísticas al ganar
 async function enviarStats(modoId = 1) {
+    console.log(traza);
     if (typeof juego === 'undefined') {
         console.error("Error: El objeto 'juego' no está disponible");
         return null;
     }
     if (juego.haTerminado()) {
-        return await enviarPartidaAlBackend(modoId);
+        const datos = await enviarPartidaAlBackend(modoId);
+        if (datos && datos.esRecord === true) {
+            console.log("¡Nuevo récord! Actualizando la clasificación...");
+            // Reutilizamos renderClasif() de clasificacion.js
+            // Esto vuelve a hacer el GET al backend y repinta la tabla
+            if (typeof renderClasif === 'function') {
+                await renderClasif();
+            }
+        }
+        return datos;
     }
     return null;
 }
+

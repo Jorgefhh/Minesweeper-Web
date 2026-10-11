@@ -26,8 +26,45 @@
         <label for="correo">Correo</label>
         <input type="email" id="correo" required placeholder="tuemail@ejemplo.com" />
 
+        <label for="pais">País</label>
+        <select id="pais" required>
+          <option value="" disabled selected hidden>Seleccioná tu país</option>
+          <option value="AR">Argentina</option>
+          <option value="AU">Australia</option>
+          <option value="BO">Bolivia</option>
+          <option value="BR">Brasil</option>
+          <option value="CA">Canadá</option>
+          <option value="CL">Chile</option>
+          <option value="CO">Colombia</option>
+          <option value="EC">Ecuador</option>
+          <option value="ES">España</option>
+          <option value="US">Estados Unidos</option>
+          <option value="MX">México</option>
+          <option value="NZ">Nueva Zelanda</option>
+          <option value="PY">Paraguay</option>
+          <option value="PE">Perú</option>
+          <option value="GB">Reino Unido</option>
+          <option value="UY">Uruguay</option>
+          <option value="VE">Venezuela</option>
+        </select>
+
         <label for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" required placeholder="••••••••" minlength="6" />
+        <div class="input-password-wrapper">
+          <input type="password" id="contrasena" required placeholder="••••••••" minlength="6" />
+          <button type="button" class="btn-toggle-password" id="toggle-contrasena" title="Mostrar/Ocultar">
+            <svg class="icono-ojo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icono-ojo-cerrado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+
+        <label for="repetir-contrasena">Repetir Contraseña</label>
+        <div class="input-password-wrapper">
+          <input type="password" id="repetir-contrasena" required placeholder="••••••••" minlength="6" />
+          <button type="button" class="btn-toggle-password" id="toggle-repetir-contrasena" title="Mostrar/Ocultar">
+            <svg class="icono-ojo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icono-ojo-cerrado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
 
         <p id="mensaje-error" class="mensaje-error"></p>
         <p id="mensaje-exito" class="mensaje-exito"></p>

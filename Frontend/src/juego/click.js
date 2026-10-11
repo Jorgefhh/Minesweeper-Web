@@ -43,33 +43,37 @@ async function manejarClick(event) {
 
     else if (event.type == "contextmenu") {
         event.preventDefault(); // evitar menú o comportamiento por defecto
-        juego.clicksDerecho++;
+        let cambioBandera = false;
         // Hacemos un toggle Si la celda ya tiene bandera, la quitamos 
         if (celda.classList.contains("celda-bandera")) {
             celda.classList.remove("celda-bandera");
             celda.classList.add("celda-oculta");
+            cambioBandera = true;
             if (juego.minasRestantes < juego.minas) {
                 juego.minasRestantes++;
             }
-        } else {
-            if (juego.tablero[fila_click][col_click] == "M" || juego.tablero[fila_click][col_click] == "V") {
-                celda.classList.remove("celda-oculta");
-                celda.classList.add("celda-bandera");
-                if (juego.minasRestantes > 0) {
-                    juego.minasRestantes--;
-                }
+        } else if (celda.classList.contains("celda-oculta") &&
+            (juego.tablero[fila_click][col_click] == "M" || juego.tablero[fila_click][col_click] == "V")) {
+            celda.classList.remove("celda-oculta");
+            celda.classList.add("celda-bandera");
+            cambioBandera = true;
+            if (juego.minasRestantes > 0) {
+                juego.minasRestantes--;
             }
         }
 
         // Actualizamos contador de bombas en la barra superior en vivo
         actualizarConteoBombas();
 
-        //GUARDO LA JUGADA EN UN LOG
-        traza.push({
-            tipo: "derecho",
-            timestamp: Math.round(performance.now() - juego.inicio),
-            coordenadas: Number(event.target.dataset.index)  //Parseo el str a entero
-        });
+        // Registrar únicamente acciones que colocan o quitan una bandera.
+        if (cambioBandera) {
+            juego.clicksDerecho++;
+            traza.push({
+                tipo: "derecho",
+                timestamp: Math.round(performance.now() - juego.inicio),
+                coordenadas: Number(celda.dataset.index)
+            });
+        }
     }
     return juego.celdas;
 }
@@ -80,9 +84,7 @@ async function terminarJuego() {
     let datosBackend = null;
 
     if (juego.estado === "ganado") {
-        if (typeof enviarStats === 'function') {
-            datosBackend = await enviarStats(1);
-        }
+
     }
     else if (juego.estado === "perdido") {
         const idxExplotada = juego.columnas * juego.filaExplotada + juego.colExplotada;
@@ -103,6 +105,9 @@ async function terminarJuego() {
         }
         juego.expGanada = 0; // dejar 0 para partida perdida
         // NO enviar estadísticas al backend cuando pierde
+    }
+    if (typeof enviarStats === 'function') {
+        datosBackend = await enviarStats(1);
     }
 
     // Renderizar la tabla de estadísticas únicamente aquí, al terminar la partida

@@ -31,7 +31,8 @@ public class Usuario {
     private LocalDate fechaInicio;
     @Column("experiencia")
     private Integer experiencia;
-
+    @Column("pais")
+    private String pais;
     
 
 }

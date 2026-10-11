@@ -16,4 +16,5 @@ public class StatsResponse {
     private int clickDer;
     private double tiempo;
     private int experiencia;
+    private boolean esRecord;
 }

@@ -41,6 +41,11 @@ public class Tablero {
     }
 
     public void aplicarBandera(int fila, int columna) {
+        //Comprobación de los límites
+        if (!(fila >= 0 && fila < this.getFilas())
+                || !(columna >= 0 && columna < this.getColumnas())) {
+            return;
+        }
         if (this.banderas[fila][columna] == 1)
             this.banderas[fila][columna] = 0;
         else {

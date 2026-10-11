@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minesweeper Neon | Nueva partida</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/dseg7-classic@5.3.0/index.css">
   <link rel="stylesheet" href="menu.css">
 </head>
+
 <body>
   <header class="site-header">
     <a class="brand" href="menu.html" aria-label="Minesweeper Neon, partida">Minesweeper <span>Neon</span></a>
@@ -15,24 +18,201 @@
     </a>
     <div class="account-preview" id="account-preview" aria-label="Perfil de usuario">
       <div class="avatar" aria-hidden="true"><span class="avatar-head"></span><span class="avatar-body"></span></div>
-      <div class="account-data"><strong id="username">Jorginho</strong><div class="xp-row"><span>XP</span><span class="xp-track"><span id="xp-progress"></span></span><small id="xp-value">120</small></div></div>
+      <div class="account-data"><strong id="username">Jorginho</strong>
+        <div class="xp-row"><span>XP</span><span class="xp-track"><span id="xp-progress"></span></span><small
+            id="xp-value">120</small></div>
+      </div>
     </div>
-    <button class="settings-button" type="button" aria-label="Configuración" title="Configuración"><span aria-hidden="true">⚙</span></button>
+    <button class="settings-button" type="button" aria-label="Configuración" title="Configuración"><span
+        aria-hidden="true">⚙</span></button>
   </header>
   <nav class="main-nav" aria-label="Navegación principal">
     <a class="active" href="menu.html" aria-current="page">Partida</a>
-    <a href="perfil.html">Perfil</a><a href="clasificacion.html">Clasificación</a><a href="partidas_guardadas.html">Partidas Guardadas</a>
+    <a href="perfil.html">Perfil</a><a href="#clasificacion-section" id="nav-clasificacion">Clasificación</a><a
+      href="partidas_guardadas.html">Partidas Guardadas</a><a href="ajustes.html"> Ajustes </a>
   </nav>
-  <main class="page-content"><section class="new-game-panel" aria-labelledby="new-game-title"><div class="modal">
-    <h1 id="new-game-title">Nueva Partida</h1><div class="divider"></div><h2 class="section-label">Tamaño del Tablero</h2>
-    <div class="difficulty-track" id="difficulty-track">
-      <button class="diff-card selected" type="button" data-index="0" aria-pressed="true"><span class="diff-name">Fácil</span><span class="diff-value">9×9</span></button>
-      <button class="diff-card" type="button" data-index="1" aria-pressed="false"><span class="diff-name">Intermedio</span><span class="diff-value">16×16</span></button>
-      <button class="diff-card" type="button" data-index="2" aria-pressed="false"><span class="diff-name">Difícil</span><span class="diff-value">20×30</span></button>
-    </div>
-    <p class="note">Nota: Las partidas jugadas solo serán guardadas si se presiona en el botón <strong>"Guardar"</strong> al finalizarla ó si el jugador logra un nuevo récord personal</p>
-    <button class="start-button" id="start-button" type="button">Empezar</button>
-  </div></section></main>
+
+  <main class="page-content">
+    <!-- ========== VISTA 1: Selección de dificultad ========== -->
+    <section class="new-game-panel" id="menu-panel" aria-labelledby="new-game-title">
+      <div class="modal">
+        <h1 id="new-game-title">Nueva Partida</h1>
+        <div class="divider"></div>
+        <h2 class="section-label">Tamaño del Tablero</h2>
+        <div class="difficulty-track" id="difficulty-track">
+          <button class="diff-card selected" type="button" data-index="0" aria-pressed="true"><span
+              class="diff-name">Fácil</span><span class="diff-value">9×9</span></button>
+          <button class="diff-card" type="button" data-index="1" aria-pressed="false"><span
+              class="diff-name">Intermedio</span><span class="diff-value">16×16</span></button>
+          <button class="diff-card" type="button" data-index="2" aria-pressed="false"><span
+              class="diff-name">Difícil</span><span class="diff-value">20×30</span></button>
+        </div>
+        <p class="note">Nota: Las partidas jugadas solo serán guardadas si se presiona en el botón
+          <strong>"Guardar"</strong> al finalizarla ó si el jugador logra un nuevo récord personal</p>
+        <button class="start-button" id="start-button" type="button">Empezar</button>
+      </div>
+    </section>
+
+    <!-- ========== VISTA 2: Tablero + Panel de opciones ========== -->
+    <section class="game-area" id="game-area" hidden>
+      <div class="game-layout">
+
+        <!-- Panel de opciones lateral (a la izquierda) -->
+        <aside class="options" aria-label="Opciones">
+          <div class="group">
+            <span class="opt-label">Dificultad</span>
+            <div class="seg" id="seg-dificultad">
+              <button class="on" data-d="facil">Fácil</button>
+              <button data-d="intermedio">Medio</button>
+              <button data-d="dificil">Difícil</button>
+            </div>
+          </div>
+
+          <hr class="opt-divider">
+
+          <div class="group">
+            <button class="btn hint" id="btnPista">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 18h6M10 21h4" />
+                <path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" />
+              </svg>
+              Pista <span class="badge" id="pistas">2</span>
+            </button>
+            <button class="btn" id="btnAyuda">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7" />
+                <circle cx="12" cy="17" r=".6" fill="currentColor" />
+              </svg>
+              Cómo jugar
+            </button>
+          </div>
+
+          <div class="group">
+            <span class="opt-label">Vista</span>
+            <div class="row">
+              <button class="btn icon-btn" id="zoomOut" aria-label="Alejar">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-4-4M8 11h6" />
+                </svg>
+              </button>
+              <button class="btn icon-btn" id="zoomIn" aria-label="Acercar">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-4-4M8 11h6M11 8v6" />
+                </svg>
+              </button>
+              <div class="zoom-val" id="zoomVal">100%</div>
+            </div>
+            <button class="btn" id="btnFull">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+              </svg>
+              Pantalla completa
+            </button>
+          </div>
+
+          <hr class="opt-divider">
+
+          <button class="btn primary" id="btnNuevo">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 12a8 8 0 1 1-2.6-5.9" />
+              <path d="M20 4v5h-5" />
+            </svg>
+            Nuevo juego
+          </button>
+        </aside>
+
+        <!-- Zona del tablero (barra superior + grid) -->
+        <div class="board-zone" id="board-zone">
+          <div class="barra-superior">
+            <div class="barra-items">
+              <div class="barra-grupo grupo-izquierdo">
+                <img src="../../assets/img/GRAYFLAG.png" alt="Bandera" class="bomba-icon">
+                <div class="item-control bomba-box">
+                  <div class="display mini-display">
+                    <span class="ghost">999</span>
+                    <span id="bombas-restantes" class="live">000</span>
+                  </div>
+                </div>
+              </div>
+              <div class="barra-grupo grupo-centro">
+                <button id="reiniciar" type="button" aria-label="Reiniciar partida"></button>
+              </div>
+              <div class="barra-grupo grupo-derecho">
+                <div class="item-control tiempo-box">
+                  <div class="display mini-display">
+                    <span class="ghost">999</span>
+                    <span id="tiempo" class="live">000</span>
+                  </div>
+                </div>
+                <img src="../../assets/img/GRAYCLOCK.png" alt="Reloj" class="bomba-icon">
+              </div>
+            </div>
+          </div>
+          <div class="contenedor-principal">
+            <div class="tablero"></div>
+            <aside class="panel-estadisticas">
+              <h2>Resultados</h2>
+              <ul>
+                <li>Clicks Izq: <span id="estad-clicks-izq">0</span></li>
+                <li>Clicks Der: <span id="estad-clicks-der">0</span></li>
+                <li>Tiempo transcurrido: <span id="estad-tiempo">0.000 s</span></li>
+                <li>Fecha última partida: <span id="estad-fecha">-</span></li>
+                <li>Dificultad: <span id="estad-modo">1</span></li>
+                <li>XP ganada: <span id="estad-exp">0</span></li>
+              </ul>
+            </aside>
+          </div>
+        </div>
+
+
+
+      </div>
+    </section>
+
+    <!-- ========== VISTA 3: Clasificación ========== -->
+    <section class="clasificacion-section" id="clasificacion-section">
+      <div class="wrap-clasif">
+        <header class="clasif-header">
+          <div class="logo-clasif" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5" fill="#fff"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+          </div>
+          <h1>Clasificación</h1>
+          <p class="sub-clasif">Los 25 mejores tiempos · Minesweeper Neon</p>
+        </header>
+
+        <section class="card-clasif">
+          <div class="tabs-clasif" role="tablist" id="tabs-clasif"></div>
+          <div class="filters-clasif">
+            <label class="sel-clasif"><span class="lbl-clasif">País</span><span class="selbox-clasif"><span class="flagslot-clasif" id="cflag"></span><select id="fc"></select></span></label>
+            <label class="sel-clasif"><span class="lbl-clasif">Mes</span><span class="selbox-clasif"><select id="fm"></select></span></label>
+            <button class="clear-clasif" id="clr" type="button" hidden>Limpiar filtros</button>
+            <span class="info-clasif" id="cnt"></span>
+          </div>
+          <div class="scroller-clasif">
+            <div class="grid-clasif head-clasif" aria-hidden="true">
+              <span class="c-clasif">#</span><span>Jugador</span><span class="c-clasif">País</span>
+              <span class="r-clasif">Tiempo</span><span class="r-clasif date-clasif">Fecha</span>
+            </div>
+            <div id="list-clasif"></div>
+          </div>
+        </section>
+        <footer class="footer-clasif">Se cuenta el mejor tiempo de cada jugador dentro de los filtros elegidos</footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts del juego (solo se ejecutan cuando se muestra el tablero) -->
+  <script src="../juego/plantilla.js"></script>
+  <script src="../api.js"></script>
+  <script src="../juego/logica.js"></script>
+  <script src="../juego/juego.js"></script>
+  <script src="../juego/stats.js"></script>
+  <script src="../juego/click.js"></script>
+  <script src="clasificacion.js"></script>
   <script src="menu.js"></script>
 </body>
+
 </html>

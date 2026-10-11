@@ -16,11 +16,15 @@ public class RegisterRequest {
     private String nombreUsuario;
 
     //2 atributo:
+    @NotBlank (message = "El mensaje no puede estar vacío.")
+    private String pais;
+
+    //3 atributo:
     @NotBlank (message = "El correo no puede estar vacío.")
     @Email (message =  "El formato de correo no es válido.")
     private String correo;
 
-    //3 atributo:
+    //4 atributo:
     @NotBlank (message = "La contraseña no puede estar vacía")
     @Size (min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;

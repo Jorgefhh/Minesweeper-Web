@@ -35,6 +35,7 @@ public class UsuarioService {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setFechaInicio(LocalDate.now());
         usuario.setExperiencia(0);
+        usuario.setPais(userRequest.getPais());  //Este atributo es nuevo antes no lo tenía.
         return usuarioRepository.save(usuario); // Llama al repository y le pasa los datos recién procesados
     }
 

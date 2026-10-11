@@ -41,7 +41,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 //Permite acceso (SIN LOGIN) a solamente esos endpoints
-                .requestMatchers("/usuarios/register", "/usuarios/login").permitAll()
+                .requestMatchers("/usuarios/register", "/usuarios/login", "/api/clasificacion").permitAll()
                 .anyRequest().authenticated()  
                 //Defino que todos los endpoints de request restantes
                 //Proporcionen si o si un jwt para acceder caso contrario se le responderá automaticamente

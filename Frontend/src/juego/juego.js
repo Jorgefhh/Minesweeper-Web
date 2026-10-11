@@ -1,11 +1,15 @@
 /********************** FLUJO PRINCIPAL DE CÓDIGO  **********************/
-// Inicializar tablero
-juego.reiniciarEstado();
-//Ejecuto un oyente al cargar la página sobre el DOM
-window.addEventListener("DOMContentLoaded", () => {
-  //Genero visualmente el tablero.
-  pintar();  //FUNCION PRINCIPAL DEL JUEGO QUE GENERA LOS EVENTOS A CADA CELDA
-});
+// Solo auto-inicializar si estamos en panel_tablero.html (no en menu.html)
+const _esMenuPage = window.location.pathname.includes('/inicio/');
+if (!_esMenuPage) {
+  // Inicializar tablero
+  juego.reiniciarEstado();
+  //Ejecuto un oyente al cargar la página sobre el DOM
+  window.addEventListener("DOMContentLoaded", () => {
+    //Genero visualmente el tablero.
+    pintar();  //FUNCION PRINCIPAL DEL JUEGO QUE GENERA LOS EVENTOS A CADA CELDA
+  });
+}
 
 //Agrego un evento a la etiqueda de reiniciar
 document.querySelector("#reiniciar").addEventListener("click", async function () {
@@ -15,6 +19,12 @@ document.querySelector("#reiniciar").addEventListener("click", async function ()
     document.querySelector("#reiniciar").classList.remove("activado");
   }, 200); // se apaga después de un cuarto de segundo
 });
+
+// Evitar el menú contextual del navegador en el área que contiene el tablero
+const boardZone = document.getElementById("board-zone");
+if (boardZone) {
+  boardZone.addEventListener("contextmenu", (e) => e.preventDefault());
+}
 
 //******************************************************************* */
 
@@ -72,7 +82,7 @@ function mapeoDOM() {
       //?
       celda.classList.remove("celda-oculta",
         "celda-1", "celda-2", "celda-3",
-        "celda-4", "celda-5","celda-6", "celda-mina",
+        "celda-4", "celda-5", "celda-6", "celda-mina",
         "celda-vacia");
       //Pongo la clase de estilo según el estado del tablero lógico:
       switch (valor) {
@@ -91,6 +101,7 @@ function mapeoDOM() {
 }
 
 async function reiniciarJuego() {
+  traza.length = 0;  //Es vital vaciar la traza sino las partidas seran inconsistentes.
   juego.reiniciarEstado();
   reiniciarTimer();
   juego.estado = "inicial";
