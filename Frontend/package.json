@@ -1,7 +1,8 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "Frontend modular en Vanilla JavaScript para Minesweeper Neon con diseño retro-neón y comunicación con API REST.",
+  "description": "Frontend modular en Vanilla JavaScript para Minesweeper Neon mediante comunicación con API REST.",
+  "main": "index.js",
   "scripts": {},
   "keywords": [],
   "author": "",
