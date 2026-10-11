@@ -1,73 +1,98 @@
-# Cómo organizar las carpetas
+# ⚡ Minesweeper Neon - Frontend
 
-La idea es simple: **una carpeta por tema**. Todo lo de login/registro va junto,
-todo lo del juego va junto, y lo que usan los dos (api.js, styles.css) queda
-"suelto" en `src/` porque es compartido.
+Módulo cliente para **Minesweeper Neon**. Desarrollado con el estándar **Vanilla Web Stack** (HTML5, CSS3, JavaScript ES6+), sin sobrecarga de frameworks, priorizando rendimiento nativo, modularidad y estética cyberpunk/retro-neón.
+
+---
+
+## 📁 Estructura del Módulo
+
+La aplicación cliente está organizada de forma modular según el dominio de funcionalidad:
 
 ```
 Frontend/
-├── assets/                  <- imágenes, iconos, etc (ya la tenías)
-├── src/
-│   ├── api.js                <- TODOS los fetch al backend (login, register, juego...)
-│   ├── styles.css            <- colores y estilos base, compartidos por toda la app
-│   │
-│   ├── auth/                 <- NUEVA carpeta: todo lo de login/registro
-│   │   ├── login.html
-│   │   ├── registrar.html
-│   │   ├── auth.css
-│   │   └── auth.js
-│   │
-│   └── juego/                <- acá van tus archivos que ya tenías
-│       ├── panel_tablero.html
-│       ├── juego.js
-│       └── logica.js
-│
-└── README.md
+├── assets/                    # Recursos gráficos (iconos de banderas, cronómetros, etc.)
+├── playwright.config.js       # Configuración para pruebas automatizadas E2E
+├── package.json               # Dependencias de testing (Playwright)
+├── tests/                     # Suites de pruebas de interfaz
+└── src/
+    ├── api.js                 # Cliente unificado HTTP (Fetch API + Bearer JWT)
+    ├── styles.css             # Variables globales CSS, tipografías y reset
+    │
+    ├── auth/                  # Módulo de Autenticación
+    │   ├── login.html         # Pantalla de inicio de sesión
+    │   ├── registrar.html     # Pantalla de registro de usuario
+    │   ├── auth.css           # Estilos de formularios y validaciones visuales
+    │   └── auth.js            # Lógica de validación de campos y llamadas a /usuarios
+    │
+    ├── inicio/                # Módulo Principal y Menú
+    │   ├── menu.html          # Vista de inicio, selección de tablero y ranking
+    │   ├── menu.css           # Layout del menú, barra de navegación y modales
+    │   ├── menu.js            # Interacción de menús, estado del usuario y vistas
+    │   └── clasificacion.js   # Renderizado de tabla de récords y filtros (país/mes)
+    │
+    └── juego/                 # Módulo del Tablero y Mecánicas del Juego
+        ├── panel_tablero.html # Vista del tablero
+        ├── juego.js           # Inicialización del ciclo de vida de la partida
+        ├── logica.js          # Lógica interna de casillas, minas y despejes
+        ├── click.js           # Interacciones del ratón (izquierdo, banderas, chording)
+        ├── plantilla.js       # Construcción dinámica de la cuadrícula DOM
+        ├── stats.js           # Recopilación de traza de movimientos y métricas
+        └── styles.css         # Estilos visuales del tablero, celdas y efectos neón
 ```
 
-## Por qué separarlo así
+---
 
-- **`auth/`**: agrupa TODO lo del login y registro. Si mañana agregás
-  "olvidé mi contraseña", va ahí adentro también.
-- **`juego/`**: agrupa lo que ya tenías. No tuve que tocar tu lógica del juego,
-  solo la muevo de carpeta.
-- **`api.js` y `styles.css` quedan sueltos en `src/`** porque los usan
-  las dos partes (login y juego). Si los metiera dentro de `auth/`, el
-  juego no podría usarlos sin repetir código.
+## 🎨 Sistema de Diseño y Estilos
 
-## Cómo se conecta cada página
+El diseño visual está centralizado en variables personalizables en `src/styles.css` y hojas de estilo por módulo:
+- **Paleta Neón**: Uso de contrastes oscuros profundos con acentos neón para dar la vibra retro-arcade.
+- **Tipografía Digital**: Integración de la fuente digital `@fontsource/dseg7-classic` para el cronómetro y el contador de minas.
+- **Adaptabilidad y Feedback**: Animaciones sutiles en hover, estados activos, modales transparentes y soporte para pantalla completa y zoom.
 
-1. El usuario entra a `src/auth/login.html`.
-2. Si no tiene cuenta, aprieta "Registrate acá" → `registrar.html`.
-3. En `registrar.html` completa el formulario → `auth.js` llama a
-   `registrarUsuario()` (que está en `api.js`) → hace `POST /usuario/register`.
-4. Si sale bien, lo manda de vuelta a `login.html`.
-5. En `login.html` completa sus datos → `auth.js` llama a `loginUsuario()`
-   → `POST /usuario/login` → el backend devuelve el token.
-6. Guardamos el token con `localStorage.setItem("token", ...)`.
-7. Lo mandamos a `src/juego/panel_tablero.html` (tu dashboard/juego).
+---
 
-## Qué falta que hagas vos
+## 🔌 Conexión con la API (`api.js`)
 
-1. Mover `juego.js`, `logica.js` y `panel_tablero.html` a `src/juego/`
-   (leé `src/juego/LEEME_MOVER_ACA.txt`).
-2. Revisar `src/api.js` y cambiar `API_BASE_URL` si tu backend no corre
-   en `http://localhost:8080`.
-3. Fijarte que los nombres de los campos que mando (`correo`, `contrasena`,
-   `nombre`) coincidan con lo que tu backend espera en el JSON. Si tu backend
-   usa otros nombres (por ejemplo `email` en vez de `correo`), cambialos en
-   `auth.js` y en los `id` de los `<input>` del HTML.
-4. Para probarlo sin instalar nada, podés abrir `login.html` con la
-   extensión "Live Server" de VSCode (clic derecho → "Open with Live Server").
-   Abrirlo con doble clic directo también funciona, pero Live Server evita
-   algunos problemas raros del navegador.
+Todas las llamadas hacia el backend están centralizadas en `src/api.js`. Esto evita dispersar peticiones `fetch()` en la lógica de interfaz y garantiza:
+1. **Inyección automática del Token**: Inclusión de la cabecera `Authorization: Bearer <token>` cuando el usuario está autenticado.
+2. **Manejo de Expiración**: Si el servidor responde con `401 Unauthorized`, la sesión se limpia y se redirige automáticamente al login.
+3. **Punto central de configuración**: Cambiar la URL del servidor se realiza únicamente modificando `API_BASE_URL` en `api.js`:
+   ```javascript
+   const API_BASE_URL = "http://localhost:8080";
+   ```
 
-## Sobre el diseño
+---
 
-Usé un modo oscuro con cajas de borde fino, como el panel de tu imagen
-(la de la banderita 🚩, "Reiniciar" y el reloj). Arriba de cada página de
-login/registro dejé una franja con 3 cajitas del mismo estilo, para que
-se sienta parte del mismo "juego" en vez de una pantalla de login genérica.
-Los colores y tipografías están todos como variables al principio de
-`styles.css`, así que si querés cambiar el rojo por otro color, lo cambiás
-en un solo lugar (`--color-acento`) y se actualiza en toda la app.
+## 🚀 Ejecución Local
+
+Podés servir este módulo con cualquier servidor web estático:
+
+1. **Con Live Server (VS Code)**:
+   - Clic derecho en `src/inicio/menu.html` o `src/auth/login.html` → **Open with Live Server**.
+
+2. **Con Node (`npx serve`)**:
+   ```bash
+   npx serve .
+   ```
+
+3. **Con Python**:
+   ```bash
+   python -m http.server 3000
+   ```
+
+---
+
+## 🧪 Pruebas Automatizadas
+
+Las pruebas de extremo a extremo (E2E) están implementadas con **Playwright**:
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar tests
+npx playwright test
+
+# Ejecutar con interfaz visual
+npx playwright test --ui
+```

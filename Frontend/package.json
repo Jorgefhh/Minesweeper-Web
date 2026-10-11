@@ -1,8 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "La idea es simple: **una carpeta por tema**. Todo lo de login/registro va junto, todo lo del juego va junto, y lo que usan los dos (api.js, styles.css) queda \"suelto\" en `src/` porque es compartido.",
-  "main": "index.js",
+  "description": "Frontend modular en Vanilla JavaScript para Minesweeper Neon con diseño retro-neón y comunicación con API REST.",
   "scripts": {},
   "keywords": [],
   "author": "",
